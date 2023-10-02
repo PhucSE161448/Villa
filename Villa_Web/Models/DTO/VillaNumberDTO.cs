@@ -1,11 +1,11 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Villa.Models.DTO
+namespace Villa_Web.Models.DTO
 {
-    public class VillaNumberUpdateDTO
+    public class VillaNumberDTO
     {
         [Required]
-        public int VillaNo { get; set; }
+        public int VillaNo { get;set; }
         [Required]
         public int VillaID { get; set; }
         public string SpecialDetails { get; set; }
