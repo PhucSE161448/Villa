@@ -6,7 +6,7 @@ namespace Villa_Web.Models
     {
         public HttpStatusCode StatusCode { get; set; }
         public bool IsSuccess { get; set; }  = true;
-        public List<string> ErrorsMessage { get; set; }
+        public List<string> ErrorsMessages { get; set; }
         public object Result { get; set; }
     }
 }
