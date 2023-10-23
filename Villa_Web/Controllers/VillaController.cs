@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using System.Collections.Generic;
@@ -28,10 +29,12 @@ namespace Villa_Web.Controllers
             }
             return View(list);
         }
+        [Authorize(Roles ="admin")]
         public async Task<IActionResult> CreateVilla()
         {
             return View();
         }
+        [Authorize(Roles = "admin")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> CreateVilla(VillaCreateDTO model)
@@ -48,6 +51,7 @@ namespace Villa_Web.Controllers
             TempData["error"] = "Error encountered.";
             return View(model);
         }
+        [Authorize(Roles = "admin")]
         public async Task<IActionResult> UpdateVilla(int id)
         {
             var response = await _villaService.GetAsync<APIResponse>(id);
@@ -58,6 +62,7 @@ namespace Villa_Web.Controllers
             }
             return NotFound();
         }
+        [Authorize(Roles = "admin")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> UpdateVilla(VillaUpdateDTO model)
@@ -74,6 +79,7 @@ namespace Villa_Web.Controllers
             TempData["error"] = "Error encountered.";
             return View(model);
         }
+        [Authorize(Roles = "admin")]
         public async Task<IActionResult> DeleteVilla(int id)
         {
             var response = await _villaService.GetAsync<APIResponse>(id);
@@ -84,6 +90,7 @@ namespace Villa_Web.Controllers
             }
             return NotFound();
         }
+        [Authorize(Roles = "admin")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteVilla(VillaDTO model)

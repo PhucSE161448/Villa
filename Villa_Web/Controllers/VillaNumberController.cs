@@ -1,8 +1,10 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Newtonsoft.Json;
 using System.Collections.Generic;
+using System.Data;
 using System.Reflection;
 using Villa_Web.Models;
 using Villa_Web.Models.DTO;
@@ -33,7 +35,7 @@ namespace Villa_Web.Controllers
             }
             return View(list);
         }
-
+        [Authorize(Roles = "admin")]
         public async Task<IActionResult> CreateVillaNumber()
         {
             VillaNumberCreateVM villaNumberCreateVM = new VillaNumberCreateVM();
@@ -49,6 +51,7 @@ namespace Villa_Web.Controllers
             }
             return View(villaNumberCreateVM);
         }
+        [Authorize(Roles = "admin")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> CreateVillaNumber(VillaNumberCreateVM model)
@@ -80,6 +83,7 @@ namespace Villa_Web.Controllers
             }
             return View(model);
         }
+        [Authorize(Roles = "admin")]
         public async Task<IActionResult> UpdateVillaNumber(int id)
         {
             VillaNumberUpdateVM villaNumberUpdateVM = new();
@@ -102,6 +106,7 @@ namespace Villa_Web.Controllers
             }
             return NotFound();
         }
+        [Authorize(Roles = "admin")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> UpdateVillaNumber(VillaNumberUpdateVM model)
@@ -133,6 +138,7 @@ namespace Villa_Web.Controllers
             }
             return View(model);
         }
+        [Authorize(Roles = "admin")]
         public async Task<IActionResult> DeleteVillaNumber(int id)
         {
             VillaNumberDeleteVM villaNumberDeleteVM = new();
@@ -155,6 +161,7 @@ namespace Villa_Web.Controllers
             }
             return NotFound();
         }
+        [Authorize(Roles = "admin")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteVillaNumber(VillaNumberDeleteVM model)
