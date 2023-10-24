@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Net;
+using System.Text.Json;
 using Villa.Data;
 using Villa.Models;
 using Villa.Models.DTO;
@@ -28,14 +29,33 @@ namespace Villa.Controllers
         }
 
         [HttpGet]
+        [ResponseCache(CacheProfileName = "Default30")]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<ActionResult<APIResponse>> GetVillas()
+        public async Task<ActionResult<APIResponse>> GetVillas([FromQuery(Name ="filterOccupancy")] int? occupancy,
+            [FromQuery] string? search, int pageSize = 0, int pageNumber = 1)
         {
             try
             {
-                IEnumerable<Villas> villaList = await _dbVilla.GetAllAsync();
+                IEnumerable<Villas> villaList;
+                if (occupancy > 0)
+                {
+                    villaList = await _dbVilla.GetAllAsync(x => x.Occupancy == occupancy, pageSize:pageSize,
+                        pageNumber: pageNumber);
+                }
+                else
+                {
+                    villaList = await _dbVilla.GetAllAsync(pageSize: pageSize,
+                        pageNumber: pageNumber);
+                }
+                if (!string.IsNullOrEmpty(search))
+                {
+                    villaList = villaList.Where(x => x.Name.ToLower().Contains(search.ToLower())
+                    || x.Amenity.ToLower().Contains(search.ToLower()));
+                }
+                Pagination pagination = new Pagination() { PageNumber= pageNumber, PageSize = pageSize };
+                Response.Headers.Add("X-Pagination", JsonSerializer.Serialize(pagination));
                 _response.Result = _mapper.Map<List<VillaDTO>>(villaList);
                 _response.StatusCode = HttpStatusCode.OK;
                 return Ok(_response);
@@ -54,6 +74,7 @@ namespace Villa.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        // [ResponseCache(Location =ResponseCacheLocation.None,NoStore =true)]
         public async Task<ActionResult<APIResponse>> GetVilla(int id)
         {
             if (id == 0)
@@ -98,7 +119,7 @@ namespace Villa.Controllers
                 return BadRequest(createDTO);
             }
             try
-            { 
+            {
                 Villas villa = _mapper.Map<Villas>(createDTO);
                 await _dbVilla.CreateAsync(villa);
                 _response.Result = _mapper.Map<VillaDTO>(villa);
