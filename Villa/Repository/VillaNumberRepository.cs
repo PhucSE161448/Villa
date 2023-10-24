@@ -19,10 +19,17 @@ namespace Villa.Repository
 
         public async Task<VillaNumber> UpdateAsync(VillaNumber entity)
         {
+            var entry = _db.Entry(entity);
+            if (entry.State == EntityState.Detached)
+            {
+                _db.Attach(entity);
+            }
+
             entity.UpdatedDate = DateTime.Now;
             _db.VillaNumbers.Update(entity);
             await _db.SaveChangesAsync();
             return entity;
+
         }
     }
 }
